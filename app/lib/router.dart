@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,18 +32,34 @@ class ScaffoldWithNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: navigationShell.goBranch,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), label: 'Messages'),
-          NavigationDestination(icon: Icon(Icons.calendar_today_outlined), label: 'Schedule'),
-          NavigationDestination(icon: Icon(Icons.approval_outlined), label: 'Approvals'),
-          NavigationDestination(icon: Icon(Icons.hub_outlined), label: 'Company'),
-        ],
+      // Glassmorphism tab bar per §5.5 + §5.9 — only tab bar, nav bar scrolled, composer, modal grabber
+      bottomNavigationBar: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xAE1C1C1E) : const Color(0xB8FFFFFF), // 0.68 / 0.72
+              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.5), width: 0.5)),
+            ),
+            child: NavigationBar(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              indicatorColor: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+              selectedIndex: navigationShell.currentIndex,
+              onDestinationSelected: navigationShell.goBranch,
+              destinations: const [
+                NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Home'),
+                NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble_rounded), label: 'Messages'),
+                NavigationDestination(icon: Icon(Icons.calendar_today_outlined), selectedIcon: Icon(Icons.calendar_today_rounded), label: 'Schedule'),
+                NavigationDestination(icon: Icon(Icons.approval_outlined), selectedIcon: Icon(Icons.approval), label: 'Approvals'),
+                NavigationDestination(icon: Icon(Icons.hub_outlined), selectedIcon: Icon(Icons.hub_rounded), label: 'Company'),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
