@@ -18,13 +18,8 @@ class GlassBar extends StatelessWidget {
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.72),
-            border: Border(
-              top: BorderSide(
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
-                width: 0.5,
-              ),
-            ),
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.72),
+            border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.2), width: 0.5)),
           ),
           child: child,
         ),
