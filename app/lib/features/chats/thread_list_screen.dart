@@ -45,7 +45,7 @@ class _T extends State<ThreadListScreen> {
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(m['body'] as String, style: TextStyle(color: isMe ? Colors.white : null)),
-                  if (m['citations'] != null) ...[(const SizedBox(height: 6)), Wrap(spacing: 6, children: (m['citations'] as List).map((e) => CitationChip(label: e as String)).toList())],
+                  if (m['citations'] != null) ...[const SizedBox(height: 6), Wrap(spacing: 6, children: [for (final e in (m['citations'] as List)) CitationChip(citationId: e as String)])],
                 ]),
               ),
             ),

@@ -50,7 +50,7 @@ class _InboxScreenState extends State<InboxScreen> {
                   title: Text(_items[i]['title']!),
                   subtitle: Text(_items[i]['desc']!),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => showModalBottomSheet(context: context, builder: (_) => ApprovalSheet(approval: _items[i]), isScrollControlled: true),
+                  onTap: () => showModalBottomSheet(context: context, builder: (_) => ApprovalSheet(title: _items[i]['title']!, rationale: _items[i]['desc']!), isScrollControlled: true),
                 ),
               ),
             ),

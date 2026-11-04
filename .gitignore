@@ -45,3 +45,24 @@ coverage/
 *.tar.gz
 *.mp4
 *.mov
+
+# Flutter / Dart — generated, never commit
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+app/build/
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+
+# Pub lock - keep pubspec.lock for apps, ignore for packages (app is an app, so keep it, but ignore dart_tool lock)
+**/hooks_runner/**/*.lock
+
+# Supabase / env
+.supabase/
+

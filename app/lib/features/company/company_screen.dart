@@ -8,16 +8,15 @@ class CompanyScreen extends StatefulWidget {
   State<CompanyScreen> createState() => _CompanyScreenState();
 }
 
-class _CompanyScreenState extends State<CompanyScreen> with SingleTickerProviderStateMixin {
-  late final AnimationController _pulseCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600))..repeat();
+class _CompanyScreenState extends State<CompanyScreen> {
   @override
-  void dispose() { _pulseCtrl.dispose(); super.dispose(); }
+  void dispose() { super.dispose(); }
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: [
       const SliverAppBar.large(title: Text('Company')),
       SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Card(clipBehavior: Clip.antiAlias, child: SizedBox(height: 220, width: double.infinity, child: CustomPaint(painter: OrgPulsePainter(animation: _pulseCtrl), size: const Size(double.infinity, 220)))),
+        Card(clipBehavior: Clip.antiAlias, child: SizedBox(height: 220, width: double.infinity, child: CustomPaint(painter: OrgPulsePainter(), size: const Size(double.infinity, 220)))),
         const SizedBox(height: 12),
         Text('Charter', style: Theme.of(context).textTheme.titleMedium),
         const Card(child: ListTile(title: Text('Empower founders with an autonomous OS'), subtitle: Text('Vision: Every startup runs like Fortune 500'))),
