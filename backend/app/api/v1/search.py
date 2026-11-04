@@ -13,5 +13,7 @@ async def health() -> dict[str, str]:
 
 
 @router.get("")
-async def search(q: str = "") -> dict[str, Any]:
-    return {"results": [], "query": q}
+async def search(q: str = "", company_id: str = "mock", top_k: int = 8) -> dict[str, Any]:
+    from app.services.retrieval_service import reranked_search
+    results = await reranked_search(q, company_id, top_k=top_k)
+    return {"results": results, "query": q, "meta": {"total": len(results)}}
