@@ -1,0 +1,17 @@
+# FoundryOS — Launcher Icons config
+# Run: dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  image_path_android: "assets/icon/app_icon.png"
+  image_path_ios: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#4F46E5"
+  adaptive_icon_foreground: "assets/branding/foundry_icon_fg.svg"
+  remove_alpha_ios: true
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FoundryOS Primary Mark — Squircle gradient + geometric F + sparkle -->
+<!-- 1024x1024 master, ContinuousRectangleBorder 28% radius approx via superellipse path -->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FoundryOS Logo</title>
+  <desc id="desc">Squircle gradient indigo with white geometric F and sparkle badge</desc>
+  <defs>
+    <!-- Gradient 135deg: #4F46E5 → #6366F1 → #7C74FF -->
+    <linearGradient id="foundryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="55%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C74FF"/>
+    </linearGradient>
+    <!-- Superellipse squircle path approximation for 1024 with r=280 (27.3%) -->
+    <clipPath id="squircleClip">
+      <path d="M 512 48 C 240 48 48 240 48 512 C 48 784 240 976 512 976 C 784 976 976 784 976 512 C 976 240 784 48 512 48 Z"/>
+    </clipPath>
+    <!-- Squircle shadow for floating variant (not used in app icon) -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.08"/>
+    </filter>
+    <!-- Inner highlight for depth -->
+    <linearGradient id="highlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background squircle with gradient -->
+  <g filter="url(#shadow)">
+    <path d="M 512 48 C 240 48 48 240 48 512 C 48 784 240 976 512 976 C 784 976 976 784 976 512 C 976 240 784 48 512 48 Z" fill="url(#foundryGradient)"/>
+    <!-- Subtle top highlight for depth (iOS deference) -->
+    <path d="M 512 48 C 240 48 48 240 48 512 C 48 784 240 976 512 976 C 784 976 976 784 976 512 C 976 240 784 48 512 48 Z" fill="url(#highlight)"/>
+  </g>
+
+  <!-- Geometric F monogram — centered, 60% width ~614, thickness 92 -->
+  <!-- F construction: vertical stem + top bar + middle bar, 20pt radius -->
+  <g fill="#FFFFFF">
+    <!-- Vertical stem -->
+    <rect x="256" y="248" width="108" height="528" rx="20" ry="20"/>
+    <!-- Top horizontal -->
+    <rect x="256" y="248" width="512" height="108" rx="20" ry="20"/>
+    <!-- Middle horizontal (shorter) -->
+    <rect x="256" y="456" width="384" height="96" rx="18" ry="18"/>
+    <!-- Notch detail — pour channel 45deg chamfer bottom-right of F -->
+    <!-- We subtract a small triangle via mask to create chamfer on stem bottom -->
+    <path d="M 364 760 L 364 776 L 348 776 Z" fill="#4F46E5" opacity="0"/>
+  </g>
+  <!-- Chamfer overlay to create notch effect (white stem with indigo triangle cut) -->
+  <path d="M 324 776 L 364 776 L 364 736 L 324 776 Z" fill="#4F46E5" opacity="1" style="mix-blend-mode: multiply;"/>
+
+  <!-- Sparkle badge — 4-point star at 78%,22% with glow -->
+  <g transform="translate(798, 224)">
+    <!-- Glow -->
+    <circle cx="0" cy="0" r="36" fill="#FFFFFF" opacity="0.22"/>
+    <circle cx="0" cy="0" r="28" fill="#FFFFFF" opacity="0.14"/>
+    <!-- Star shape -->
+    <path d="M 0 -32 L 8 -8 L 32 0 L 8 8 L 0 32 L -8 8 L -32 0 L -8 -8 Z" fill="#FFFFFF"/>
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="6" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Optional subtle inner border 0.5pt hairline for light mode -->
+  <path d="M 512 48 C 240 48 48 240 48 512 C 48 784 240 976 512 976 C 784 976 976 784 976 512 C 976 240 784 48 512 48 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1"/>
+
+</svg>

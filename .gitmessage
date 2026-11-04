@@ -1,0 +1,16 @@
+# Conventional Commit Template
+# Format: <type>(<scope>): <short description>
+# Types: feat, fix, chore, docs, style, refactor, test, perf
+# Example: feat(auth): add JWT middleware
+#
+# Body (optional): explain WHAT and WHY, not how
+# Footer (optional): BREAKING CHANGE: or Closes #123
+
+# Header (max 72 chars) ---------------------------------------------
+
+
+# Body (wrap at 72) --------------------------------------------------
+
+
+# Footer -------------------------------------------------------------
+

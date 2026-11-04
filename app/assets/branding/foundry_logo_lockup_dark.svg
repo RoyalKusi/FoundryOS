@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="420" viewBox="0 0 1024 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="55%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C74FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="420" rx="24" fill="#000000"/>
+  <g transform="translate(32, 32)">
+    <path d="M 80 8 C 36 8 8 36 8 80 C 8 124 36 152 80 152 C 124 152 152 124 152 80 C 152 36 124 8 80 8 Z" fill="url(#g2)"/>
+    <g fill="#FFFFFF" transform="scale(0.148)">
+      <rect x="256" y="248" width="108" height="528" rx="20"/>
+      <rect x="256" y="248" width="512" height="108" rx="20"/>
+      <rect x="256" y="456" width="384" height="96" rx="18"/>
+    </g>
+    <g transform="translate(124, 36) scale(0.5)" fill="#FFFFFF">
+      <path d="M 0 -12 L 3 -3 L 12 0 L 3 3 L 0 12 L -3 3 L -12 0 L -3 -3 Z"/>
+    </g>
+  </g>
+  <text x="220" y="132" font-family="Inter, SF Pro Display, Helvetica, Arial, sans-serif" font-size="64" font-weight="700" letter-spacing="-0.5" fill="#F5F5F7">Foundry<tspan font-weight="400" fill="#7C74FF">OS</tspan></text>
+  <text x="220" y="170" font-family="Inter, SF Pro Display, Helvetica, Arial, sans-serif" font-size="18" font-weight="500" letter-spacing="1.2" fill="#9A9AA0">COMPANY OPERATING SYSTEM</text>
+</svg>

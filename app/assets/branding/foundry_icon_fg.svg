@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FoundryOS Foreground only — for Android adaptive icon -->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="safe">
+      <circle cx="512" cy="512" r="384"/>
+    </clipPath>
+  </defs>
+  <!-- Transparent background — only F + sparkle -->
+  <g fill="#FFFFFF">
+    <rect x="256" y="248" width="108" height="528" rx="20" ry="20"/>
+    <rect x="256" y="248" width="512" height="108" rx="20" ry="20"/>
+    <rect x="256" y="456" width="384" height="96" rx="18" ry="18"/>
+  </g>
+  <g transform="translate(798, 224)">
+    <path d="M 0 -32 L 8 -8 L 32 0 L 8 8 L 0 32 L -8 8 L -32 0 L -8 -8 Z" fill="#FFFFFF"/>
+    <circle cx="0" cy="0" r="6" fill="#FFFFFF"/>
+  </g>
+</svg>

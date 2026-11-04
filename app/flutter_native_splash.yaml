@@ -1,0 +1,17 @@
+# FoundryOS Splash — light/dark adaptive
+flutter_native_splash:
+  color: "#FFFFFF"
+  color_dark: "#000000"
+  image: assets/branding/app_icon.png
+  image_dark: assets/branding/app_icon.png
+  android_12:
+    color: "#FFFFFF"
+    color_dark: "#000000"
+    image: assets/branding/app_icon.png
+    image_dark: assets/branding/app_icon.png
+    icon_background_color: "#4F46E5"
+    icon_background_color_dark: "#0B0B0D"
+    branding: assets/branding/logo_light.png
+    branding_dark: assets/branding/logo_dark.png
+  branding: assets/branding/logo_light.png
+  branding_dark: assets/branding/logo_dark.png

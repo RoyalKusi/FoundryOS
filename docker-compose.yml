@@ -1,0 +1,63 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@supabase_db:5432/postgres
+      REDIS_URL: redis://redis:6379/0
+      LLM_MODE: mock
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: arq app.workers.arq_worker.WorkerSettings
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@supabase_db:5432/postgres
+      REDIS_URL: redis://redis:6379/0
+      LLM_MODE: mock
+    depends_on:
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # Supabase local stack — use `supabase start` if you have Supabase CLI.
+  # This placeholder keeps `docker compose up` working without full Supabase.
+  # For full local Supabase (Auth, Storage, Realtime, pgvector):
+  #   supabase init; supabase start; supabase db reset
+
+  # Optional: Flutter web for quick preview
+  # flutter-web:
+  #   build:
+  #     context: ./app
+  #     dockerfile: Dockerfile.web
+  #   ports:
+  #     - "8080:80"
