@@ -1,26 +1,45 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+// Production Failure — sealed, no codegen required (freezed would need build_runner)
+// A2/D2 squad: Result<T,Failure> + displayMessage per §6
+sealed class Failure {
+  const Failure();
+  String get displayMessage => switch (this) {
+        NetworkFailure(:final message) => message ?? 'Network error — check connection',
+        AuthFailure(:final message) => message ?? 'Session expired — sign in again',
+        NotFoundFailure(:final message) => message ?? 'Not found',
+        ValidationFailure(:final message) => message ?? 'Check your input',
+        ServerFailure(:final message) => message ?? 'Something went wrong — try again',
+        CacheFailure(:final message) => message ?? 'Offline data unavailable',
+        UnknownFailure(:final message) => message ?? 'Unknown error',
+      };
+}
 
-part 'failure.freezed.dart';
-
-@freezed
-sealed class Failure with _$Failure {
-  const factory Failure.network({String? message, int? statusCode}) = NetworkFailure;
-  const factory Failure.auth({String? message}) = AuthFailure;
-  const factory Failure.notFound({String? message}) = NotFoundFailure;
-  const factory Failure.validation({String? message, Map<String, dynamic>? details}) = ValidationFailure;
-  const factory Failure.server({String? message}) = ServerFailure;
-  const factory Failure.cache({String? message}) = CacheFailure;
-  const factory Failure.unknown({String? message}) = UnknownFailure;
-
-  const Failure._();
-
-  String get displayMessage => when(
-        network: (m, c) => m ?? 'Network error — check connection',
-        auth: (m) => m ?? 'Session expired — sign in again',
-        notFound: (m) => m ?? 'Not found',
-        validation: (m, _) => m ?? 'Check your input',
-        server: (m) => m ?? 'Something went wrong — try again',
-        cache: (m) => m ?? 'Offline data unavailable',
-        unknown: (m) => m ?? 'Unknown error',
-      );
+class NetworkFailure extends Failure {
+  final String? message;
+  final int? statusCode;
+  const NetworkFailure({this.message, this.statusCode});
+}
+class AuthFailure extends Failure {
+  final String? message;
+  const AuthFailure({this.message});
+}
+class NotFoundFailure extends Failure {
+  final String? message;
+  const NotFoundFailure({this.message});
+}
+class ValidationFailure extends Failure {
+  final String? message;
+  final Map<String, dynamic>? details;
+  const ValidationFailure({this.message, this.details});
+}
+class ServerFailure extends Failure {
+  final String? message;
+  const ServerFailure({this.message});
+}
+class CacheFailure extends Failure {
+  final String? message;
+  const CacheFailure({this.message});
+}
+class UnknownFailure extends Failure {
+  final String? message;
+  const UnknownFailure({this.message});
 }

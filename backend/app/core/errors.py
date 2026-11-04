@@ -46,8 +46,13 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(Exception)
-    async def unhandled_handler(_: Request, exc: Exception) -> JSONResponse:
+    async def unhandled_handler(request: Request, exc: Exception) -> JSONResponse:
+        import structlog
+
+        logger = structlog.get_logger(__name__)
+        logger.error("unhandled_exception", path=request.url.path, error=str(exc), exc_type=type(exc).__name__)
+        # Never leak internals to client — production-safe
         return JSONResponse(
             status_code=500,
-            content=_error_payload("internal_error", "Internal server error", {"type": type(exc).__name__}),
+            content=_error_payload("internal_error", "Something went wrong — try again", {}),
         )
