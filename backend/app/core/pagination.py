@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Generic, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 T = TypeVar("T")
 
@@ -20,16 +20,18 @@ class PaginationMeta(BaseModel):
     page_size: int = Field(alias="pageSize")
     total_pages: int = Field(alias="totalPages")
 
-    model_config = {"populate_by_name": True}
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
     data: list[T]
     meta: PaginationMeta
 
-    model_config = {"populate_by_name": True}
+    model_config = ConfigDict(populate_by_name=True)
 
 
 def paginate(total: int, page: int, page_size: int) -> PaginationMeta:
     total_pages = (total + page_size - 1) // page_size if total else 0
-    return PaginationMeta(total=total, page=page, page_size=page_size, total_pages=total_pages)
+    return PaginationMeta.model_validate(
+        {"total": total, "page": page, "pageSize": page_size, "totalPages": total_pages}
+    )

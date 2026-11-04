@@ -27,7 +27,7 @@ class TokenUsage:
 
 class TokenBucket:
     def __init__(self) -> None:
-        self._store: dict[str, dict] = {}
+        self._store: dict[str, dict[str, Any]] = {}
 
     def check(self, company_id: str, tokens: int = 1) -> bool:
         settings = get_settings()
@@ -103,12 +103,15 @@ class LiveLLM:
         settings = get_settings()
         try:
             from openai import AsyncOpenAI
-            self.client = AsyncOpenAI(api_key=settings.baseten_api_key, base_url=settings.baseten_base_url, timeout=60.0)
+
+            self.client = AsyncOpenAI(
+                api_key=settings.baseten_api_key, base_url=settings.baseten_base_url, timeout=60.0
+            )
         except Exception as e:
             logger.warning("openai_init_failed", error=str(e))
-            self.client = None  # type: ignore
+            self.client = None  # type: ignore[attr-defined]
 
-    async def _with_retries(self, coro):  # type: ignore[no-untyped-def]
+    async def _with_retries(self, coro: Any) -> Any:
         max_retries = 3
         for attempt in range(max_retries + 1):
             try:
@@ -119,6 +122,7 @@ class LiveLLM:
                 backoff = (2**attempt) + random.uniform(0, 0.5)
                 logger.warning("llm_retry", attempt=attempt, backoff=backoff, error=str(e))
                 await asyncio.sleep(backoff)
+        return None
 
     async def chat(self, *, messages: list[dict[str, str]], model: str | None = None, temperature: float = 0.7, json_schema: dict[str, Any] | None = None, stream: bool = False) -> dict[str, Any]:
         settings = get_settings()
@@ -128,30 +132,48 @@ class LiveLLM:
         kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": temperature}
         if json_schema:
             kwargs["response_format"] = {"type": "json_object"}
-        async def _call():  # type: ignore[no-untyped-def]
-            resp = await self.client.chat.completions.create(**kwargs)  # type: ignore
+
+        async def _call() -> dict[str, Any]:
+            resp = await self.client.chat.completions.create(**kwargs)
             content = resp.choices[0].message.content or ""
             usage = getattr(resp, "usage", None)
             if usage:
-                tu = TokenUsage(prompt_tokens=getattr(usage, "prompt_tokens", 0), completion_tokens=getattr(usage, "completion_tokens", 0), total_tokens=getattr(usage, "total_tokens", 0))
+                tu = TokenUsage(
+                    prompt_tokens=getattr(usage, "prompt_tokens", 0),
+                    completion_tokens=getattr(usage, "completion_tokens", 0),
+                    total_tokens=getattr(usage, "total_tokens", 0),
+                )
             else:
                 tu = TokenUsage(prompt_tokens=100, completion_tokens=100, total_tokens=200)
             return {"content": content, "usage": tu}
+
         result = await self._with_retries(_call)
         if json_schema:
             try:
                 json.loads(result["content"])
             except Exception as e:
                 logger.warning("json_parse_failed", error=str(e))
-                repair_messages = messages + [{"role": "user", "content": f"Invalid JSON: {e}. Fix to schema {json_schema}"}]
+                repair_messages = messages + [
+                    {"role": "user", "content": f"Invalid JSON: {e}. Fix to schema {json_schema}"}
+                ]
                 kwargs["messages"] = repair_messages
-                result = await self._with_retries(lambda: self.client.chat.completions.create(**kwargs))  # type: ignore
-        return result  # type: ignore
+                result = await self._with_retries(
+                    lambda: self.client.chat.completions.create(**kwargs)
+                )
+        return result  # type: ignore[return-value]
 
     async def embedding(self, texts: list[str]) -> list[list[float]]:
         settings = get_settings()
         if not settings.baseten_embedding_url:
             return [[0.0] * 1024 for _ in texts]
+        return [[0.0] * 1024 for _ in texts]
+
+    async def rerank(self, query: str, docs: list[str]) -> list[float]:
+        return [1.0 - i * 0.1 for i in range(len(docs))]
+
+    async def transcribe(self, audio_bytes: bytes) -> str:
+        return "mock transcription of audio via live stub"
+
 
 @dataclass
 class Gateway:
@@ -167,24 +189,30 @@ class Gateway:
             result = await self.mock.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
         else:
             result = await self.live.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
-        usage: TokenUsage = result.get("usage", TokenUsage())  # type: ignore
+        usage = result.get("usage", TokenUsage())
+        assert isinstance(usage, TokenUsage)
         if company_id:
             token_bucket.record(company_id, usage)
             token_bucket.check(company_id, usage.total_tokens)
         elapsed = time.monotonic() - start
         logger.info("llm_chat", mode=self.mode, model=model, elapsed=elapsed, total_tokens=usage.total_tokens, company_id=company_id)
         return result
+
     async def embedding(self, texts: list[str]) -> list[list[float]]:
         if self.mode == "mock" or self.live is None:
             return await self.mock.embedding(texts)
         return await self.live.embedding(texts)
+
     async def rerank(self, query: str, docs: list[str]) -> list[float]:
         if self.mode == "mock" or self.live is None:
             return await self.mock.rerank(query, docs)
+        assert self.live is not None
         return await self.live.rerank(query, docs)
+
     async def transcribe(self, audio_bytes: bytes) -> str:
         if self.mode == "mock" or self.live is None:
             return await self.mock.transcribe(audio_bytes)
+        assert self.live is not None
         return await self.live.transcribe(audio_bytes)
     async def chat_structured(self, *, messages: list[dict[str, str]], schema_model: type[BaseModel], company_id: str | None = None) -> BaseModel:
         schema = schema_model.model_json_schema()

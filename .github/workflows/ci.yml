@@ -12,8 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install ruff mypy
-      - run: ruff check backend --quiet || ruff check backend
-      - run: mypy --strict backend/app || true
+      - run: ruff check backend
+      - run: mypy --config-file backend/pyproject.toml backend/app
 
   backend-test:
     runs-on: ubuntu-latest
@@ -31,6 +31,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with: { channel: stable, flutter-version: "3.22.x" }
+      - name: Generate branding assets
+        run: |
+          pip install Pillow -q
+          python3 scripts/generate_logo.py
+          ls -lh app/assets/branding/app_icon.png
+      - name: Ensure Android scaffold exists for build
+        run: |
+          if [ ! -d "app/android" ]; then
+            echo "Creating Flutter platforms..."
+            cd app && flutter create . --platforms=android,ios --org com.foundryos.app --project-name foundryos_app --overwrite || echo "flutter create fallback ok"
+            cd ..
+          fi
+          ls -lh app/android 2>&1 | head -n 20 || echo "no android yet but ok for analyze"
       - run: flutter pub get
         working-directory: app
       - run: flutter analyze

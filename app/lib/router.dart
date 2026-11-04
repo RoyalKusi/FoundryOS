@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'features/company/company_screen.dart';
-import 'features/chats/thread_list_screen.dart';
-import 'features/tasks/board_screen.dart';
 import 'features/approvals/inbox_screen.dart';
+import 'features/chats/thread_list_screen.dart';
+import 'features/company/company_screen.dart';
 import 'features/genesis/genesis_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/schedule/schedule_screen.dart';

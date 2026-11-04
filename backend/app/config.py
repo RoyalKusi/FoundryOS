@@ -6,10 +6,15 @@ from functools import lru_cache
 from typing import Literal
 
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except ImportError:  # pragma: no cover
+    BaseSettings = object  # type: ignore[assignment, misc]
+    SettingsConfigDict = dict  # type: ignore[assignment, misc]
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):  # type: ignore[misc]
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

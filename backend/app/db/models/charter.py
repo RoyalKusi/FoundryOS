@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 from datetime import datetime
@@ -14,5 +15,5 @@ class Charter(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
     __tablename__ = "charters"
 
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    charter_json: Mapped[dict] = mapped_column("json", JSONB, nullable=False, default=dict)
+    charter_json: Mapped[dict[str, Any]] = mapped_column("json", JSONB, nullable=False, default=dict)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

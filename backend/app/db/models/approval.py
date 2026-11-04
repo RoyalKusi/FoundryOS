@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 from datetime import datetime
@@ -14,7 +15,7 @@ class Approval(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
     __tablename__ = "approvals"
 
     type: Mapped[str] = mapped_column(String(100), nullable=False)
-    payload: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    payload: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     requested_by: Mapped[uuid.UUID | None] = mapped_column(PG_UUID(as_uuid=True), nullable=True)
     approver_member_id: Mapped[uuid.UUID | None] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("members.id", ondelete="SET NULL"), nullable=True

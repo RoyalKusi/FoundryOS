@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 
@@ -17,7 +18,7 @@ class AgentRun(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     )
     trigger: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="pending")
-    steps: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    steps: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cost: Mapped[float | None] = mapped_column(nullable=True)
     error: Mapped[str | None] = mapped_column(String(2000), nullable=True)

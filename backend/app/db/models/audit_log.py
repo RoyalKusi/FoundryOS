@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 
@@ -17,4 +18,4 @@ class AuditLog(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
     target_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     target_id: Mapped[uuid.UUID | None] = mapped_column(PG_UUID(as_uuid=True), nullable=True)
     payload_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    payload: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    payload: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)

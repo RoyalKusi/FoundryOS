@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 from datetime import datetime
@@ -17,5 +18,5 @@ class KpiSnapshot(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         PG_UUID(as_uuid=True), ForeignKey("roles.id", ondelete="CASCADE"), nullable=False, index=True
     )
     period: Mapped[str] = mapped_column(String(50), nullable=False)
-    metrics: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    metrics: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     score: Mapped[float | None] = mapped_column(Float, nullable=True)

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 
@@ -20,5 +21,5 @@ class Message(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     )
     kind: Mapped[str] = mapped_column(String(30), nullable=False, default="text")
     body: Mapped[str | None] = mapped_column(Text, nullable=True)
-    attachments: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    citations: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    attachments: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+    citations: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)

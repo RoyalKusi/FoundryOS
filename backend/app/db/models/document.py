@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 
@@ -17,7 +18,7 @@ class Document(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     scope: Mapped[str] = mapped_column(String(100), nullable=False, default="company")
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="pending")
-    doc_metadata: Mapped[dict | None] = mapped_column("metadata", JSONB, nullable=True)
+    doc_metadata: Mapped[dict[str, Any] | None] = mapped_column("metadata", JSONB, nullable=True)
 
 
 class Chunk(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
@@ -30,4 +31,4 @@ class Chunk(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
     text: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[str | None] = mapped_column(Text, nullable=True)  # vector stored as text placeholder; pgvector handles real type in migration
     tsv: Mapped[str | None] = mapped_column(Text, nullable=True)
-    chunk_metadata: Mapped[dict | None] = mapped_column("metadata", JSONB, nullable=True)
+    chunk_metadata: Mapped[dict[str, Any] | None] = mapped_column("metadata", JSONB, nullable=True)

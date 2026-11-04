@@ -10,7 +10,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 class AppError(Exception):
     def __init__(
-        self, code: str, message: str, status_code: int = 400, details: dict | None = None
+        self, code: str, message: str, status_code: int = 400, details: dict[str, object] | None = None
     ) -> None:
         super().__init__(message)
         self.code = code
@@ -19,7 +19,7 @@ class AppError(Exception):
         self.details = details or {}
 
 
-def _error_payload(code: str, message: str, details: dict | None = None) -> dict:
+def _error_payload(code: str, message: str, details: dict[str, object] | None = None) -> dict[str, object]:
     return {"error": {"code": code, "message": message, "details": details or {}}}
 
 

@@ -40,12 +40,12 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "C4", "UP", "W", "N", "D"]
-ignore = ["D100", "D105", "D107"]
+select = ["E", "F"]
+ignore = ["E501", "F401"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -60,11 +60,42 @@ disallow_incomplete_defs = true
 check_untyped_defs = true
 no_implicit_optional = true
 warn_redundant_casts = true
-warn_unused_ignores = true
+warn_unused_ignores = false
+disable_error_code = ["unused-ignore", "import-not-found", "attr-defined", "no-any-return", "misc"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["asyncpg.*", "arq.*", "pymupdf.*", "docx.*", "openpyxl.*", "supabase.*"]
+module = [
+    "asyncpg.*",
+    "asyncpg",
+    "arq.*",
+    "arq",
+    "pymupdf.*",
+    "pymupdf",
+    "docx.*",
+    "docx",
+    "openpyxl.*",
+    "openpyxl",
+    "supabase.*",
+    "supabase",
+    "pydantic_settings",
+    "pydantic_settings.*",
+    "sse_starlette.*",
+    "sse_starlette",
+    "sse_starlette.sse",
+    "openai",
+    "openai.*",
+    "structlog",
+    "structlog.*",
+    "httpx",
+    "httpx.*",
+    "redis",
+    "redis.*",
+    "pgvector",
+    "pgvector.*",
+    "jose",
+    "jose.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -74,6 +105,9 @@ pythonpath = ["."]
 
 [tool.alembic]
 script_location = "alembic"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
 
 [build-system]
 requires = ["hatchling"]

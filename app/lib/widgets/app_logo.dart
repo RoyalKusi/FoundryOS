@@ -110,7 +110,7 @@ class _LogoPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [Colors.white.withOpacity(0.18), Colors.transparent],
+        colors: [Colors.white.withValues(alpha: 0.18), Colors.transparent],
       ).createShader(Offset.zero & size);
     canvas.drawRRect(rect, hl);
 
@@ -158,8 +158,8 @@ class _LogoPainter extends CustomPainter {
       ..lineTo(sx - s * 0.25, sy - s * 0.25)
       ..close();
     // glow
-    canvas.drawCircle(Offset(sx, sy), s * 1.6, Paint()..color = Colors.white.withOpacity(0.22));
-    canvas.drawCircle(Offset(sx, sy), s * 1.25, Paint()..color = Colors.white.withOpacity(0.14));
+    canvas.drawCircle(Offset(sx, sy), s * 1.6, Paint()..color = Colors.white.withValues(alpha: 0.22));
+    canvas.drawCircle(Offset(sx, sy), s * 1.25, Paint()..color = Colors.white.withValues(alpha: 0.14));
     canvas.drawPath(sparkle, white);
     canvas.drawCircle(Offset(sx, sy), 3, white);
   }

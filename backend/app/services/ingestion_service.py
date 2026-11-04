@@ -9,5 +9,5 @@ def structure_aware_chunking(text: str, target_tokens: int = 500, overlap: float
     return paras or [text]
 
 
-async def ingest_document(document_id: str) -> dict[str, str]:  # type: ignore[no-untyped-def]
+async def ingest_document(document_id: str) -> dict[str, str]:
     return {"document_id": document_id, "chunks": "0"}

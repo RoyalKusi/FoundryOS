@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 import uuid
 
@@ -16,6 +17,6 @@ class Meeting(Base, UUIDPrimaryKeyMixin, CompanyScopedMixin, TimestampMixin):
         PG_UUID(as_uuid=True), ForeignKey("threads.id", ondelete="SET NULL"), nullable=True
     )
     agenda: Mapped[str | None] = mapped_column(Text, nullable=True)
-    participants: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    participants: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="scheduled")
-    resolutions: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    resolutions: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)

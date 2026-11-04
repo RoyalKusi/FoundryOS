@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from app.core.security import get_current_user
+from app.core.security import CurrentUser, get_current_user
 
 router = APIRouter()
 
@@ -20,11 +24,11 @@ class GenesisRequest(BaseModel):
 
 class GenesisResponse(BaseModel):
     companyId: str
-    charterDraft: dict
+    charterDraft: dict[str, Any]
 
 
 @router.post("", response_model=GenesisResponse)
-async def create_genesis(payload: GenesisRequest, user=Depends(get_current_user)) -> GenesisResponse:
+async def create_genesis(payload: GenesisRequest, user: CurrentUser = Depends(get_current_user)) -> GenesisResponse:
     from app.llm.gateway import get_gateway
 
     gateway = get_gateway()

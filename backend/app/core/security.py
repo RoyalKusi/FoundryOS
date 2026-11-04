@@ -52,5 +52,9 @@ def require_company_id(user: CurrentUser) -> str:
     return user.company_id
 
 
-CompanyId = Annotated[str, Depends(lambda: require_company_id(Depends(get_current_user)))]  # type: ignore
+def get_company_id(user: CurrentUser = Depends(get_current_user)) -> str:
+    return require_company_id(user)
+
+
+CompanyId = Annotated[str, Depends(get_company_id)]
 

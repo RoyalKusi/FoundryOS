@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from typing import Any
 
-async def hybrid_search(query: str, company_id: str, top_k: int = 8) -> list[dict]:  # type: ignore[no-untyped-def]
+
+async def hybrid_search(query: str, company_id: str, top_k: int = 8) -> list[dict[str, Any]]:
     return []
 
 
-def reciprocal_rank_fusion(results_a: list[str], results_b: list[str], k: int = 60) -> list[str]:  # type: ignore[no-untyped-def]
+def reciprocal_rank_fusion(results_a: list[str], results_b: list[str], k: int = 60) -> list[str]:
     # Simplified RRF
     scores: dict[str, float] = {}
     for rank, doc in enumerate(results_a):
