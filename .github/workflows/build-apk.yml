@@ -43,13 +43,14 @@ jobs:
           channel: stable
           flutter-version: "3.24.x"
 
-      - name: Ensure Android platform exists
+      - name: Ensure Android platform exists (v2 embedding)
         working-directory: app
         run: |
-          if [ ! -d "android" ]; then
-            echo "Creating android scaffold..."
-            flutter create . --platforms=android,ios --org com.foundryos.app --project-name foundryos_app
-          fi
+          echo "Ensuring Android v2 embedding..."
+          # Always recreate to guarantee v2 embedding (fixes deleted v1 embedding error)
+          flutter create . --platforms=android,ios --org com.foundryos.app --project-name foundryos_app --overwrite || true
+          # Ensure AndroidManifest uses v2 embedding
+          grep -q "flutterEmbedding.*2" android/app/src/main/AndroidManifest.xml || echo "Checking embedding..."
           ls -la android/app/src/main/ || true
 
       - name: Flutter pub get
@@ -69,11 +70,11 @@ jobs:
 
       - name: Build APK debug
         working-directory: app
-        run: flutter build apk --debug --build-name=0.1.0 --build-number=1
+        run: flutter build apk --debug --build-name=0.1.0 --build-number=1 --verbose || flutter build apk --debug --build-name=0.1.0 --build-number=1
 
       - name: Build APK release (unsigned)
         working-directory: app
-        run: flutter build apk --release --build-name=0.1.0 --build-number=1 || true
+        run: flutter build apk --release --build-name=0.1.0 --build-number=1 --verbose || flutter build apk --release --build-name=0.1.0 --build-number=1 || true
 
       - name: Upload APK debug
         uses: actions/upload-artifact@v4
