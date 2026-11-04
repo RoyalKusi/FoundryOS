@@ -45,7 +45,15 @@ def create_app() -> FastAPI:
 
     @app.get("/health", tags=["ops"])
     async def health() -> dict[str, str]:
-        return {"status": "ok", "env": settings.app_env, "llm_mode": settings.llm_mode}
+        return {
+            "status": "ok",
+            "env": settings.app_env,
+            "llm_mode": settings.llm_mode,
+            "baseten_base_url": settings.baseten_base_url,
+            "baseten_reasoning_model": settings.baseten_reasoning_model,
+            "baseten_fast_model": settings.baseten_fast_model,
+            "baseten_key_configured": "true" if settings.baseten_api_key else "false",
+        }
 
     @app.get("/", tags=["ops"])
     async def root() -> JSONResponse:

@@ -16,7 +16,7 @@ except ImportError:  # pragma: no cover
 
 class Settings(BaseSettings):  # type: ignore[misc]
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "../.env", "backend/.env"),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
@@ -41,11 +41,11 @@ class Settings(BaseSettings):  # type: ignore[misc]
         default="https://inference.baseten.co/v1", alias="BASETEN_BASE_URL"
     )
     baseten_reasoning_model: str = Field(
-        default="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+        default="meta-models/muse-spark-open-1026",
         alias="BASETEN_REASONING_MODEL",
     )
     baseten_fast_model: str = Field(
-        default="meta-llama/Llama-4-Scout-17B-16E-Instruct",
+        default="meta-models/muse-spark-open-1026",
         alias="BASETEN_FAST_MODEL",
     )
     baseten_embedding_url: str = Field(default="", alias="BASETEN_EMBEDDING_URL")

@@ -21,7 +21,11 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@supabase_db:5432/postgres
       REDIS_URL: redis://redis:6379/0
-      LLM_MODE: mock
+      LLM_MODE: ${LLM_MODE:-live}
+      BASETEN_API_KEY: ${BASETEN_API_KEY}
+      BASETEN_BASE_URL: ${BASETEN_BASE_URL:-https://inference.baseten.co/v1}
+      BASETEN_REASONING_MODEL: ${BASETEN_REASONING_MODEL:-meta-models/muse-spark-open-1026}
+      BASETEN_FAST_MODEL: ${BASETEN_FAST_MODEL:-meta-models/muse-spark-open-1026}
     depends_on:
       redis:
         condition: service_healthy
@@ -39,7 +43,11 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@supabase_db:5432/postgres
       REDIS_URL: redis://redis:6379/0
-      LLM_MODE: mock
+      LLM_MODE: ${LLM_MODE:-live}
+      BASETEN_API_KEY: ${BASETEN_API_KEY}
+      BASETEN_BASE_URL: ${BASETEN_BASE_URL:-https://inference.baseten.co/v1}
+      BASETEN_REASONING_MODEL: ${BASETEN_REASONING_MODEL:-meta-models/muse-spark-open-1026}
+      BASETEN_FAST_MODEL: ${BASETEN_FAST_MODEL:-meta-models/muse-spark-open-1026}
     depends_on:
       redis:
         condition: service_healthy

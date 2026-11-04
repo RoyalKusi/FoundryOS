@@ -2,26 +2,34 @@
 
 > Living execution ledger. Updated every Plan → Act → Verify → Record cycle. Source of truth for progress.
 
-**Last updated:** 2026-05-13 (Cycle 1, M0 — Act complete, Verify in progress)
-**Current milestone:** M0 — Repo & scaffolding
-**Overall progress:** 0/11 milestones complete (M0 Act done, Verify pending CI run)
-**Branch:** main
-**LLM_MODE:** mock (default, no API key required)
-**Baseten Model IDs:**
-- Cline coding model: `meta-llama/Llama-4-Maverick-17B-128E-Instruct` (via https://inference.baseten.co/v1, OpenAI Compatible)
-- Reasoning / agent model: Llama 4 Maverick (env: BASETEN_REASONING_MODEL)
-- Fast model: Llama 4 Scout (env: BASETEN_FAST_MODEL)
-- Embedding: BGE-M3 / Qwen3-Embedding (env: BASETEN_EMBEDDING_URL)
-- Reranker: bge-reranker-v2-m3 (env: BASETEN_RERANKER_URL)
-- STT: Whisper large-v3-turbo (env: BASETEN_WHISPER_URL)
+**Last updated:** 2026-11-05 01:00 — Cycle 3 KICKOFF — 20 Parallel Agents Deployed
+**Current milestone:** M0 ✅ + M1-M7 in-flight — 20 agents refining to full frontend↔backend operational
+**Overall progress:** 1/8 milestones complete (M0 live, M1 charter live) — now scaling to 100% integrated
+**Branch:** main — worktrees: `ws-b` (API/Auth), `ws-c` (Intelligence/RAG), `ws-d` (Design System), `ws-e` (App Features) + `main` orchestrator
+**LLM_MODE:** live (Baseten `b10_VhErMdIY...` verified `muse-spark-open-1026` 200; gateway fallback Maverick→Muse)
+**Baseten Model IDs:** `meta-models/muse-spark-open-1026` via https://inference.baseten.co/v1 (OpenAI Compatible) — Maverick deprecated 403; reasoning+fast both Muse Spark; embeddings/Whisper stub until Truss; TokenBucket per company/role
+
+**🚀 20-Agent Deployment — 4 Squads — All Parallel (CONTRACTS v1 frozen as boundary):**
+- **Squad Platform (A1-A4):** A1 Contracts&DB (A1 lead), A2 Backend Core+Auth+Security, A3 Workers+Realtime+SSE, A4 DevOps&Release (CI, smoke, APK)
+- **Squad Intelligence (B1-B5):** B1 Gateway+Token, B2 Genesis+Charter, B3 RAG Ingest+Retrieve, B4 Meetings+Execution, B5 HR+Workforce
+- **Squad Experience (C1-C8):** C1 Design System (tokens/glass), C2 Genesis 5-step, C3 Home, C4 Messages (threads/composer/streaming), C5 Schedule+Meeting, C6 Approvals, C7 Company+OrgPulse, C8 Role+Settings
+- **Squad Integration (D1-D3):** D1 Offline+Media (drift/record), D2 State+Network (Dio/Riverpod/Supabase), D3 QA+Evals (goldens, recall@8)
+
+**Deployment Status:** A1 ✅ frozen, B1 ✅ live, C1 partial, A2-A4/C2-C8/D1-D3 🟡 in-progress — worktrees ready, orchestrator merging on green checks
 
 ---
 
-## Current Cycle
+## Current Cycle — Cycle 3 — 20-Agent Full Integration
 
-### Cycle 1 — M0: Foundation (updated spec §11)
+**Goal:** Make app well-operational fully with frontend↔backend integrated — every tab hits real `/api/v1` via Dio+Riverpod+drift+SSE+Realtime, auth JWT+RLS enforced, Charter/Messages/Meetings/Approvals/Company all live, polish goldens, 0 warnings.
 
-**Goal:** Repo, tooling, CI, docker compose, Supabase schema + RLS, design tokens, empty app shell with **5-tab glass bar** (Home/Messages/Schedule/Approvals/Company), LLM_MODE=mock working. Must satisfy new M0 DoD: `flutter analyze` 0, `pytest`/`ruff`/`mypy` clean, smoke passes, no placeholders outside FakeApi.
+**Phase Plan (parallel worktrees, CONTRACTS as fence):**
+- **Phase 0 DONE (A1):** `CONTRACTS v1` frozen, 14 tables + RLS + pgvector 1024, enums, channels
+- **Phase 1 — Platform+Design (A2-A4 + C1):** Tighten security, jobs, CI + tokens/glass — unblocks features
+- **Phase 2 — Intelligence+Features (B1-B5 + C2-C8):** Live Charter, RAG, agent loops, all 5 tabs + Genesis polished
+- **Phase 3 — Integration (D1-D3):** Offline, media, state, QA — D2 connects FakeApi→Live toggle, D1 drift/record, D3 evals DoD
+
+**Orchestrator rules:** A1 resolves CONTRACT conflicts via ADR; app never blocks on backend (FakeApi flag); merge only on green `analyze/test/pytest/ruff/mypy/smoke`; 300-line STATE rollover.
 
 **Plan (updated 5-tab + contracts + clinerules):**
 

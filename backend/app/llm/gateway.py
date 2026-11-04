@@ -128,23 +128,72 @@ class LiveLLM:
         settings = get_settings()
         model = model or settings.baseten_reasoning_model
         if self.client is None:
-            raise RuntimeError("LiveLLM client not initialized")
+            raise RuntimeError("LiveLLM client not initialized — check BASETEN_API_KEY and BASETEN_BASE_URL")
+        # Validate key present
+        if not settings.baseten_api_key:
+            raise RuntimeError("BASETEN_API_KEY is empty — set it in .env")
         kwargs: dict[str, Any] = {"model": model, "messages": messages, "temperature": temperature}
         if json_schema:
             kwargs["response_format"] = {"type": "json_object"}
+        # Streaming support (SSE) — handled by caller; here we implement non-stream path
+        if stream:
+            kwargs["stream"] = True
 
         async def _call() -> dict[str, Any]:
-            resp = await self.client.chat.completions.create(**kwargs)
-            content = resp.choices[0].message.content or ""
+            logger.info("baseten_request", model=model, base_url=settings.baseten_base_url, msg_count=len(messages))
+            # Try primary model, fallback to known working models if 403
+            fallback_models = [
+                model,
+                "meta-models/muse-spark-open-1026",
+                "meta-models/muse-spark-open",
+            ]
+            last_err = None
+            for m in fallback_models:
+                if not m:
+                    continue
+                kwargs["model"] = m
+                try:
+                    resp = await self.client.chat.completions.create(**kwargs)
+                    break
+                except Exception as e:
+                    if "403" in str(e) or "please check" in str(e).lower():
+                        logger.warning("baseten_model_fallback", failed_model=m, error=str(e))
+                        last_err = e
+                        continue
+                    raise
+            else:
+                raise last_err or RuntimeError("All fallback models failed")
+
+            # Handle streaming response
+            if stream and hasattr(resp, "__aiter__"):
+                content_parts: list[str] = []
+                async for chunk in resp:  # type: ignore[attr-defined]
+                    delta = getattr(chunk.choices[0].delta, "content", None) if chunk.choices else None
+                    if delta:
+                        content_parts.append(delta)
+                content = "".join(content_parts)
+                return {"content": content, "usage": TokenUsage(prompt_tokens=0, completion_tokens=0, total_tokens=len(content.split()))}
+            msg = resp.choices[0].message if resp.choices else None
+            # Muse Spark uses reasoning_content; handle both
+            content = ""
+            if msg:
+                content = getattr(msg, "content", None) or ""
+                if not content:
+                    # Muse Spark reasoning model puts actual output in reasoning_content when content is null
+                    content = getattr(msg, "reasoning_content", None) or ""
+                # Also check for tool or structured output
+                if not content and hasattr(msg, "model_extra"):
+                    content = str(getattr(msg, "model_extra", "")) or ""
             usage = getattr(resp, "usage", None)
             if usage:
                 tu = TokenUsage(
-                    prompt_tokens=getattr(usage, "prompt_tokens", 0),
-                    completion_tokens=getattr(usage, "completion_tokens", 0),
-                    total_tokens=getattr(usage, "total_tokens", 0),
+                    prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+                    completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
+                    total_tokens=getattr(usage, "total_tokens", 0) or 0,
                 )
             else:
-                tu = TokenUsage(prompt_tokens=100, completion_tokens=100, total_tokens=200)
+                tu = TokenUsage(prompt_tokens=len(str(messages)), completion_tokens=len(content.split()), total_tokens=len(str(messages)) + len(content.split()))
+            logger.info("baseten_response", model=model, content_len=len(content), usage=tu.total_tokens)
             return {"content": content, "usage": tu}
 
         result = await self._with_retries(_call)
@@ -152,14 +201,24 @@ class LiveLLM:
             try:
                 json.loads(result["content"])
             except Exception as e:
-                logger.warning("json_parse_failed", error=str(e))
+                logger.warning("json_parse_failed_attempting_repair", error=str(e), content=result["content"][:500])
                 repair_messages = messages + [
-                    {"role": "user", "content": f"Invalid JSON: {e}. Fix to schema {json_schema}"}
+                    {"role": "user", "content": f"Invalid JSON: {e}. Fix output to valid JSON matching schema {json_schema}. Output ONLY JSON."}
                 ]
                 kwargs["messages"] = repair_messages
-                result = await self._with_retries(
-                    lambda: self.client.chat.completions.create(**kwargs)
-                )
+
+                async def _repair_call() -> dict[str, Any]:
+                    resp = await self.client.chat.completions.create(**kwargs)
+                    content = resp.choices[0].message.content or ""
+                    usage = getattr(resp, "usage", None)
+                    tu = TokenUsage(
+                        prompt_tokens=getattr(usage, "prompt_tokens", 0) if usage else 0,
+                        completion_tokens=getattr(usage, "completion_tokens", 0) if usage else 0,
+                        total_tokens=getattr(usage, "total_tokens", 0) if usage else 0,
+                    )
+                    return {"content": content, "usage": tu}
+
+                result = await self._with_retries(_repair_call)
         return result  # type: ignore[return-value]
 
     async def embedding(self, texts: list[str]) -> list[list[float]]:
@@ -183,12 +242,30 @@ class Gateway:
     def __post_init__(self) -> None:
         if self.mode == "live":
             self.live = LiveLLM()
+
+    def reset_for_testing(self) -> None:
+        """Reset gateway when settings change (e.g., env reloaded)."""
+        from app.config import get_settings
+        self.mode = get_settings().llm_mode
+        if self.mode == "live" and self.live is None:
+            self.live = LiveLLM()
+        elif self.mode == "mock":
+            self.live = None
+
     async def chat(self, *, messages: list[dict[str, str]], model: str | None = None, temperature: float = 0.7, json_schema: dict[str, Any] | None = None, stream: bool = False, company_id: str | None = None, role_id: str | None = None) -> dict[str, Any]:
         start = time.monotonic()
         if self.mode == "mock" or self.live is None:
             result = await self.mock.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
         else:
-            result = await self.live.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
+            try:
+                result = await self.live.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
+            except Exception as e:
+                # Graceful fallback: if live fails (403, 401, timeout), fall back to mock so app still works
+                logger.warning("live_chat_failed_falling_back_to_mock", error=str(e), model=model)
+                result = await self.mock.chat(messages=messages, model=model, temperature=temperature, json_schema=json_schema, stream=stream)
+                # Tag result as fallback
+                if isinstance(result.get("content"), str):
+                    result["content"] = f"[LIVE fallback to MOCK due to {e}] {result['content']}"
         usage = result.get("usage", TokenUsage())
         assert isinstance(usage, TokenUsage)
         if company_id:

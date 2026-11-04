@@ -19,19 +19,37 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const AppLogo(size: 40, showWordmark: true),
                   const Spacer(),
+                  // LIVE indicator — shows Baseten Maverick connection (set via --dart-define)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty ||
+                              const String.fromEnvironment('LLM_MODE') == 'live'
+                          ? Colors.green.withOpacity(0.12)
+                          : Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty
+                            ? Colors.green.withOpacity(0.3)
+                            : Colors.transparent,
+                        width: 1,
+                      ),
                     ),
-                    child: Text(
-                      'MOCK • No keys needed',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(
+                        const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
+                        size: 14,
+                        color: const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty ? Colors.green.shade700 : Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty ? 'LIVE • Maverick 17B' : 'MOCK • No keys needed',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: const String.fromEnvironment('BASETEN_API_KEY').isNotEmpty ? Colors.green.shade700 : Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ]),
                   ),
                 ],
               ),
